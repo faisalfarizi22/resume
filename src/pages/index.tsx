@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import { FaGithub, FaInstagram, FaHardHat, FaEnvelope, FaCode, FaBookOpen, FaLaptopCode, FaUserShield, FaPlug,
   FaDatabase, FaServer, FaCloud, FaGasPump, FaShieldAlt, FaLock, FaChevronDown, 
   FaLinkedinIn,
@@ -19,6 +20,15 @@ declare global {
   }
 }
 
+const ProfilePhoto = [
+  '/profile/Profile (1).jpeg',
+  '/profile/Profile (2).jpeg',
+  '/profile/Profile (3).jpeg',
+  '/profile/Profile (4).jpeg',
+  '/profile/Profile (5).jpeg',
+  '/profile/Profile (6).jpeg',
+]
+
 const HardhatIcon: React.FC = () => {
   return (
     <div style={{ position: 'relative', display: 'inline-block', width: '1.5em', height: '1.5em' }}>
@@ -34,6 +44,7 @@ const Home: React.FC = () => {
   const scale = useTransform(scrollYProgress, [0, 0.1], [1, 0.95]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   
   const floatingAnimation = {
     y: [0, -15, 0],
@@ -58,6 +69,15 @@ const Home: React.FC = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === ProfilePhoto.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 2000); 
+    return () => clearInterval(intervalId);
+  }, []); 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -252,13 +272,25 @@ const Home: React.FC = () => {
                   </motion.div>
                 </div>
                 <div className="hidden lg:block">
-                  <div className="p-6 rounded-xl bg-gradient-to-tr from-blue-500/20 to-teal-500/20 border border-neutral-700/50 h-full flex items-center justify-center backdrop-blur-sm">
-                    <motion.div 
-                      className="ethereum-logo"
-                      animate={floatingAnimation}
-                    >
-                      <SiEthereum className="w-24 h-24 text-neutral-300/70" />
-                    </motion.div>
+                  <div className="relative p-6 rounded-xl bg-gradient-to-tr from-blue-500/20 to-teal-500/20 border border-neutral-700/50 h-full flex items-center justify-center backdrop-blur-sm overflow-hidden">
+                    <AnimatePresence>
+                      <motion.div
+                        key={ProfilePhoto[currentIndex]} 
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className="absolute inset-0" 
+                      >
+                        <Image
+                          src={ProfilePhoto[currentIndex]}
+                          alt="Foto profil Faisal Alfarizi"
+                          layout="fill"
+                          objectFit="cover" 
+                          className="rounded-xl" 
+                        />
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
